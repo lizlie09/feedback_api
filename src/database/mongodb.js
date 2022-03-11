@@ -5,15 +5,29 @@ var Mongoose = require("mongoose"),
 
 var connection_string = "";
 
-connection_string =
-  "mongodb+srv://" +
-  Config.mongodb.username +
-  ":" +
-  Config.mongodb.password +
-  "@" +
-  Config.mongodb.clusterUrl + // changes to switch db
-  `/${Config.mongodb.db}` + // staging 'visitour', prod 'Visitour'
-  "?retryWrites=true&w=majority";
+if (Config.env.dev) {
+  connection_string =
+    "mongodb://" +
+    Config.mongodb.ip +
+    ":" +
+    Config.mongodb.port +
+    "/" +
+    Config.mongodb.app +
+    "?authSource=admin";
+} else {
+  connection_string =
+    "mongodb://" +
+    Config.mongodb.username +
+    ":" +
+    Config.mongodb.password +
+    "@" +
+    Config.mongodb.ip +
+    ":" +
+    Config.mongodb.port +
+    "/" +
+    Config.mongodb.app +
+    "?authSource=admin";
+}
 
 console.log("started", connection_string);
 console.log("rocess.env.NODE_ENV", process.env.NODE_ENV);

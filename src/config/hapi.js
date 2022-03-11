@@ -4,7 +4,6 @@
 var Hapi = require("@hapi/hapi"),
   Config = require("../config"),
   Routes = require("./routes"),
-  Views = require("./views"),
   Auth = require("./auth"),
   logger = require("node-color-log"),
   moment = require("moment");
@@ -62,8 +61,6 @@ exports.deployment = async () => {
   });
 
   await internals.server.register(require("hapi-response-time"));
-  // Set Views
-  await Views.init(internals.server);
 
   // Set Authentication Strategy
   await Auth.setStrategy(internals.server);

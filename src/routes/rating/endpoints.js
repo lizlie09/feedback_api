@@ -7,16 +7,16 @@ internals.endpoints = [
 
   {
     method: ["POST"],
-    path: "/auth/login",
-    handler: Handlers.login,
+    path: "/rate",
+    handler: Handlers.rate,
     config: {
       auth: false,
     },
   },
   {
     method: ["POST"],
-    path: "/auth/signup",
-    handler: Handlers.signup,
+    path: "/report",
+    handler: Handlers.report,
     config: {
       auth: false,
     },
