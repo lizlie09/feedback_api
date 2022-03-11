@@ -1,0 +1,80 @@
+<link rel="stylesheet" href="../../assets/css/main.styles.css">
+<link rel="stylesheet" href="../../assets/css/responsive.css">
+
+{{> lp_navbar}}
+
+<div class="blog-section">
+
+    <div class="container">
+        <div class="col-1">
+            <h1>{{article.headline}}</h1>
+            <h3>{{article.credit}}</h3>
+
+            <br>
+            <br>
+
+
+            {{#each article.content}}
+
+            {{#ifEquals this.type "text-h3"}}
+            <br>
+            <h3>{{this.content}}</h3>
+            {{/ifEquals}}
+
+            {{#ifEquals this.type "text-h4"}}
+            <br>
+            <h4>{{this.content}}</h4>
+            {{/ifEquals}}
+
+            {{#ifEquals this.type "list"}}
+            <h3>{{this.content.header}}</h3>
+            <ul style="list-style-type:none;">
+                {{#each this.content.list}}
+                <li>{{this}}</li>
+                {{/each}}
+            </ul>
+            <br>
+            {{/ifEquals}}
+
+            {{#ifEquals this.type "text-bold"}}
+            <p style="font-weight: bold;">{{this.content}}</p>
+            {{/ifEquals}}
+
+            {{#ifEquals this.type "video"}}
+            {{#ifEquals this.withEmbedCode true}}
+            <iframe width="100%" height="608" src="{{this.link}}" title="YouTube video player" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+            {{/ifEquals}}
+            {{/ifEquals}}
+
+            {{#ifEquals this.type "text"}}
+            <p>{{this.content}}</p>
+            <br>
+            {{/ifEquals}}
+
+            {{#ifEquals this.type "image"}}
+            <img src="{{this.content}}" width="100%">
+            {{/ifEquals}}
+            {{/each}}
+        </div>
+
+        <div class="col-2">
+            <h3><i class="fa fa-star" aria-hidden="true"></i>  Featured Stories</h3>
+            <br>
+            {{#each sourcedArticles}}
+            <a href="/blog/{{this._id}}">
+                <h5>{{this.headline}}</h5>
+                <h6>{{this.credit}}</h6>
+            </a>
+            <br>
+            {{/each}}
+        </div>
+
+
+    </div>
+
+</div>
+
+<script src="../../assets/js/device-logger.js"></script>
+<script src="../../assets/js/main.scripts.js"></script>

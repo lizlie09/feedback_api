@@ -1,0 +1,26 @@
+POST http://0.0.0.0:3000/pisopay_merchant_callback
+content-type: application/json
+
+{
+	"responseCode": 0,
+	"responseMessage": "Successful",
+	"data": {
+		"status": "0",
+		"statusMessage": "SUCESSFULLY PAID",
+		"settlementStatus": "",
+		"referenceCount": "1",
+		"referenceNo": "PPGVPC485153065",
+		"transactionStatusAll": "0",
+		"amount": "135",
+		"traceNo": "unique_id_here",
+		"paymentChannelCode": "EMO",
+		"customerName": "Nevin Gabriel Prequencia",
+		"customerEmail": "gabrielnevin@gmail.com",
+		"customerPhone": "09268960194",
+		"transactionId": "d3499711bcb4e4fdf4ee",
+		"transactionDate": "2021-01-27 09:33:23",
+		"postedDate": "2021-02-03 13:53:00",
+		"timestamp": "1612331687",
+		"hd": "8f799426aaabfca5991049b6cf805654a1adfb7ecba845c8d536036089079748"
+	}
+}
