@@ -4,7 +4,9 @@ var internals = {};
 
 var Rate = require("../../database/models/rate"),
   internals = {};
-
+var User = require("../../database/models/User");
+var Ranking = require("../../database/models/ranking");
+var Crypto = require("../../lib/Crypto");
 var moment = require("moment");
 
 internals.get_ratertypes = async (req, reply) => {
@@ -103,6 +105,58 @@ internals.get_comments = async (req, reply) => {
   return {
     success: true,
     comments,
+  };
+};
+
+internals.get_offices = async (req, reply) => {
+  let offices = await User.find({
+    $and: [{ void: false }, { isEstablishment: true }],
+  }).lean();
+
+  return { success: true, offices };
+};
+
+internals.create_office = async (req, reply) => {
+  var payload = {
+    name: req.payload.name,
+    firstname: req.payload.firstname,
+    lastname: req.payload.lastname,
+    middlename: req.payload.middlename,
+    email: req.payload.email,
+    password: Crypto.encrypt(req.payload.password),
+    scope: ["establishment"],
+    isEstablishment: true,
+  };
+  return User.findOne({ email: req.payload.email })
+    .lean()
+    .then((data) => {
+      if (data != null) {
+        return {
+          success: false,
+          message: "Email already exists",
+        };
+      } else {
+        var user = new User(payload);
+        return user.save().then((data) => {
+          return {
+            success: true,
+            message: "Successfully created.",
+          };
+        });
+      }
+    });
+};
+
+internals.get_rankings = async (req, reply) => {
+  let { year } = req.query;
+
+  let rankings = await Ranking.find({
+    year: year || 2022,
+  }).lean();
+
+  return {
+    success: true,
+    rankings,
   };
 };
 

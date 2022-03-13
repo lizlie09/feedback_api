@@ -35,6 +35,32 @@ internals.endpoints = [
       auth: false,
     },
   },
+
+  {
+    method: ["GET"],
+    path: "/get-offices",
+    handler: Handlers.get_offices,
+    config: {
+      auth: false,
+    },
+  },
+  {
+    method: ["POST"],
+    path: "/create-office",
+    handler: Handlers.create_office,
+    config: {
+      auth: false,
+    },
+  },
+
+  {
+    method: ["GET"],
+    path: "/get-rankings",
+    handler: Handlers.get_rankings,
+    config: {
+      auth: false,
+    },
+  },
 ];
 
 module.exports = internals;

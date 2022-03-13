@@ -19,6 +19,6 @@ const UserSchema = new Mongoose.Schema({
     });
 
 
-var Ranking = Mongoose.model("rankings", UserSchema);
+var Rankings = Mongoose.model("rankings", UserSchema);
 
-module.exports = Ranking;
+module.exports = Rankings;
