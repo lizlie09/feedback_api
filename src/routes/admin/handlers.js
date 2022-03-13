@@ -26,9 +26,21 @@ internals.get_ratertypes = async (req, reply) => {
 };
 
 internals.get_performance = async (req, reply) => {
+  let query = [{ report: false }, { rate: true }, { void: false }];
+
+  let startDate = req.query.startDate;
+  let endDate = req.query.endDate;
+  if (startDate || endDate) {
+    var start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    var end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+    query.push({ createdAt: { $gte: start, $lt: end } });
+  }
+
   let rate = {};
   var condition = {
-    $and: [{ report: false }, { rate: true }, { void: false }],
+    $and: query,
   };
   let performance = await Rate.aggregate([
     { $match: condition },
@@ -145,6 +157,33 @@ internals.create_office = async (req, reply) => {
         });
       }
     });
+};
+
+internals.edit_office = (req, reply) => {
+  var payload = {
+    name: req.payload.name,
+    firstname: req.payload.firstname,
+    lastname: req.payload.lastname,
+    middlename: req.payload.middlename,
+    email: req.payload.email,
+  };
+
+  console.log(req.payload);
+  if (req.payload.name == "") {
+    return User.remove({ _id: req.payload._id }, {}).then((data) => {
+      return {
+        success: true,
+        message: "Successfully Removed",
+      };
+    });
+  } else {
+    return User.updateOne({ _id: req.payload._id }, payload).then((data) => {
+      return {
+        success: true,
+        message: "Successfully Updated!",
+      };
+    });
+  }
 };
 
 internals.get_rankings = async (req, reply) => {

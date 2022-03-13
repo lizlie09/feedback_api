@@ -16,12 +16,5 @@ module.exports = {
   },
   auth: {
     password: "algotechdigtalsolutionsrockinrolltotheworldsmashciotechky",
-  },
-  aws_credentials: {
-    region: "ap-southeast-1",
-    accessKeyId: "AKIAX2OJJ4ZGNT4T2IGF",
-    secretAccessKey: "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",
-    bucket:
-      process.env.NODE_ENV === "production" ? "visitour" : "visitour-staging",
-  },
+  }
 };

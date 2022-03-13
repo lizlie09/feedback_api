@@ -52,6 +52,14 @@ internals.endpoints = [
       auth: false,
     },
   },
+  {
+    method: ["POST"],
+    path: "/edit-office",
+    handler: Handlers.edit_office,
+    config: {
+      auth: false,
+    },
+  },
 
   {
     method: ["GET"],
