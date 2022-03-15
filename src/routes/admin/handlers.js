@@ -94,13 +94,50 @@ internals.get_performance = async (req, reply) => {
 };
 
 internals.get_reported_department = async (req, reply) => {
+  let { remarks } = req.query;
+
+  let query = [{ report: true }, { void: false }];
+
+  if (remarks) {
+    query.push({ remarks });
+  }
+
   let reports = await Rate.find({
-    $and: [{ report: true }, { void: false }],
+    $and: query,
   });
 
   return {
     success: true,
     reports,
+  };
+};
+
+internals.reply_report = function (req, reply) {
+  var payload = {
+    remarks: req.payload.remarks,
+  };
+  return Rate.update(
+    { _id: req.payload._id },
+    {
+      $set: payload,
+    }
+  ).then((data) => {
+    return {
+      success: true,
+      message: "Successfully updated",
+    };
+  });
+};
+
+internals.get_assignedoffice_comments = async (req, reply) => {
+  let { officeName } = req.query;
+  let comments = await Rate.find({
+    establishment: officeName,
+  });
+
+  return {
+    success: true,
+    comments,
   };
 };
 

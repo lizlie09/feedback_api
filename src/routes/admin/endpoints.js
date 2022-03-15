@@ -28,6 +28,22 @@ internals.endpoints = [
     },
   },
   {
+    method: ["POST"],
+    path: "/reply-report",
+    handler: Handlers.reply_report,
+    config: {
+      auth: false,
+    },
+  },
+  {
+    method: ["GET"],
+    path: "/get-assignedoffice-comments",
+    handler: Handlers.get_assignedoffice_comments,
+    config: {
+      auth: false,
+    },
+  },
+  {
     method: ["GET"],
     path: "/get-comments",
     handler: Handlers.get_comments,

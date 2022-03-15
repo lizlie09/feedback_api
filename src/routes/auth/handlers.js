@@ -12,6 +12,7 @@ const Config = require("../../config");
 internals.login = (req, reply) => {
   let email = req.payload.email;
   let password = req.payload.password;
+
   return User.findOne({ email })
     .lean()
     .then((data) => {
@@ -19,6 +20,13 @@ internals.login = (req, reply) => {
         return {
           success: false,
           message: "Email not found",
+        };
+      }
+
+      if (req.payload.mode === "assigned-officer" && !data.name) {
+        return {
+          success: false,
+          message: "Your account is not an assigned officer.",
         };
       }
 
