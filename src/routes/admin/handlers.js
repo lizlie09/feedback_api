@@ -10,14 +10,26 @@ var Crypto = require("../../lib/Crypto");
 var moment = require("moment");
 
 internals.get_ratertypes = async (req, reply) => {
-  let raterTypes = await Rate.aggregate([
+  let { establishment } = req.query;
+
+  let query = [
     {
       $group: {
         _id: "$raterType",
         total: { $sum: 1 },
       },
     },
-  ]);
+  ];
+
+  if (establishment) {
+    query.unshift({
+      $match: {
+        establishment,
+      },
+    });
+  }
+
+  let raterTypes = await Rate.aggregate(query);
 
   return {
     success: true,
@@ -120,13 +132,19 @@ internals.get_reported_department = async (req, reply) => {
 };
 
 internals.get_respondents = async (req, reply) => {
-  let { raterType } = req.query;
-
+  let { raterType, establishment } = req.query;
+  console.log(establishment)
   let query = {};
 
   if (raterType) {
     query = { ...query, raterType };
   }
+
+  if (establishment) {
+    query = { ...query, establishment };
+  }
+
+  console.log(query)
 
   let respondents = await Rate.find(query);
 
@@ -154,14 +172,24 @@ internals.reply_report = function (req, reply) {
 };
 
 internals.get_assignedoffice_comments = async (req, reply) => {
-  let { officeName } = req.query;
-  let comments = await Rate.find({
+  let { officeName, remarks, pageSize, current } = req.query;
+
+  let query = {
     establishment: officeName,
-  });
+  };
+
+  if (remarks) {
+    query = { ...query, remarks };
+  }
+  let total = await Rate.countDocuments(query);
+  let comments = await Rate.find(query)
+    .limit(parseInt(pageSize, 10))
+    .skip((parseInt(current, 10) - 1) * parseInt(pageSize, 10));
 
   return {
     success: true,
     comments,
+    total,
   };
 };
 

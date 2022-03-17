@@ -82,4 +82,50 @@ internals.signup = async (req, reply) => {
   }
 };
 
+internals.add_admin = async (req, reply) => {
+  let { email, role } = req.payload;
+
+  let user = await User.findOne({ email });
+
+  if (!user) {
+    return {
+      success: false,
+      message: "User not found",
+    };
+  }
+
+  if (user.scope.includes(role)) {
+    return {
+      success: false,
+      message: "User already an admin.",
+    };
+  }
+
+  user.scope.push(role);
+  return user.save().then((data) => {
+    return {
+      success: true,
+      message: "Successfully added as admin.",
+    };
+  });
+};
+
+internals.remove_scope = (req, reply) => {
+  let { email, role } = req.query;
+  return User.updateOne({ email }, { $pull: { scope: role } })
+    .then((data) => {
+      return {
+        success: true,
+        message: "User removed as admin",
+      };
+    })
+    .catch((err) => {
+      console.log(err);
+      return {
+        success: false,
+        message: "An error occurred",
+      };
+    });
+};
+
 module.exports = internals;

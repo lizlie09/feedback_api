@@ -21,6 +21,22 @@ internals.endpoints = [
       auth: false,
     },
   },
+  {
+    method: ["POST"],
+    path: "/add-admin",
+    handler: Handlers.add_admin,
+    config: {
+      auth: false,
+    },
+  },
+  {
+    method: ["GET"],
+    path: "/remove-scope",
+    handler: Handlers.remove_scope,
+    config: {
+      auth: false,
+    },
+  },
 ];
 
 module.exports = internals;
