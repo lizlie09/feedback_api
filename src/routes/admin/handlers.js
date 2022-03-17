@@ -94,12 +94,16 @@ internals.get_performance = async (req, reply) => {
 };
 
 internals.get_reported_department = async (req, reply) => {
-  let { remarks } = req.query;
+  let { remarks, establishment } = req.query;
 
   let query = [{ report: true }, { void: false }];
 
   if (remarks) {
     query.push({ remarks });
+  }
+
+  if (establishment) {
+    query.push({ establishment });
   }
 
   let reports = await Rate.find({
@@ -109,6 +113,23 @@ internals.get_reported_department = async (req, reply) => {
   return {
     success: true,
     reports,
+  };
+};
+
+internals.get_respondents = async (req, reply) => {
+  let { raterType } = req.query;
+
+  let query = {};
+
+  if (raterType) {
+    query = { ...query, raterType };
+  }
+
+  let respondents = await Rate.find(query);
+
+  return {
+    success: true,
+    respondents,
   };
 };
 
@@ -142,13 +163,21 @@ internals.get_assignedoffice_comments = async (req, reply) => {
 };
 
 internals.get_comments = async (req, reply) => {
+  let { remarks, establishment } = req.query;
+
+  let query = [
+    { concern: false },
+    { rate: true },
+    { report: false },
+    { void: false },
+  ];
+
+  if (remarks) {
+    query.push({ remarks });
+  }
+
   let comments = await Rate.find({
-    $and: [
-      { concern: false },
-      { rate: true },
-      { report: false },
-      { void: false },
-    ],
+    $and: query,
   });
 
   return {

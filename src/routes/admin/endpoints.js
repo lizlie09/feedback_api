@@ -28,6 +28,14 @@ internals.endpoints = [
     },
   },
   {
+    method: ["GET"],
+    path: "/get-respondents",
+    handler: Handlers.get_respondents,
+    config: {
+      auth: false,
+    },
+  },
+  {
     method: ["POST"],
     path: "/reply-report",
     handler: Handlers.reply_report,
