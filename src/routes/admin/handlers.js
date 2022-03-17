@@ -94,10 +94,8 @@ internals.get_performance = async (req, reply) => {
 };
 
 internals.get_reported_department = async (req, reply) => {
-  let { remarks, establishment } = req.query;
-
+  let { remarks, establishment, pageSize, current } = req.query;
   let query = [{ report: true }, { void: false }];
-
   if (remarks) {
     query.push({ remarks });
   }
@@ -105,14 +103,19 @@ internals.get_reported_department = async (req, reply) => {
   if (establishment) {
     query.push({ establishment });
   }
-
-  let reports = await Rate.find({
+  let total = await Rate.countDocuments({
     $and: query,
   });
+  let reports = await Rate.find({
+    $and: query,
+  })
+    .limit(parseInt(pageSize, 10))
+    .skip((parseInt(current, 10) - 1) * parseInt(pageSize, 10));
 
   return {
     success: true,
     reports,
+    total,
   };
 };
 
@@ -163,7 +166,7 @@ internals.get_assignedoffice_comments = async (req, reply) => {
 };
 
 internals.get_comments = async (req, reply) => {
-  let { remarks, establishment } = req.query;
+  let { remarks, establishment, pageSize, current } = req.query;
 
   let query = [
     { concern: false },
@@ -176,13 +179,19 @@ internals.get_comments = async (req, reply) => {
     query.push({ remarks });
   }
 
-  let comments = await Rate.find({
+  let total = await Rate.countDocuments({
     $and: query,
   });
+  let comments = await Rate.find({
+    $and: query,
+  })
+    .limit(parseInt(pageSize, 10))
+    .skip((parseInt(current, 10) - 1) * parseInt(pageSize, 10));
 
   return {
     success: true,
     comments,
+    total,
   };
 };
 
@@ -262,6 +271,21 @@ internals.get_rankings = async (req, reply) => {
   return {
     success: true,
     rankings,
+  };
+};
+
+internals.get_admins = async (req, reply) => {
+  let admins = await User.find({ scope: "admin" }).catch((err) => {
+    console.log(err);
+    return {
+      success: false,
+      message: "Server error",
+    };
+  });
+
+  return {
+    success: true,
+    admins,
   };
 };
 

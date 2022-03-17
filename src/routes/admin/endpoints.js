@@ -93,6 +93,14 @@ internals.endpoints = [
       auth: false,
     },
   },
+  {
+    method: ["GET"],
+    path: "/get-admins",
+    handler: Handlers.get_admins,
+    config: {
+      auth: false,
+    },
+  },
 ];
 
 module.exports = internals;
