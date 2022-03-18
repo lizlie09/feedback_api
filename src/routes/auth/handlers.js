@@ -30,6 +30,13 @@ internals.login = (req, reply) => {
         };
       }
 
+      if (req.payload.mode === "admin" && !data.scope.includes("admin")) {
+        return {
+          success: false,
+          message: "Unauthorized. Make sure your account is set as admin.",
+        };
+      }
+
       if (Crypto.decrypt(data.password) === password) {
         let user = { ...data };
         return {

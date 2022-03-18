@@ -9,8 +9,49 @@ var Ranking = require("../../database/models/ranking");
 var Crypto = require("../../lib/Crypto");
 var moment = require("moment");
 
+const getDateFilter = (overallFilter) => {
+  let { type, year, month, startMonth, endMonth } = JSON.parse(overallFilter);
+  if (type === "month") {
+    let startOfMonth = new Date(`${year}-${month}-01`);
+    let endOfMonth = new Date(
+      `${year}-${month}-${new Date(year, month, 0).getDate()}`
+    );
+    endOfMonth.setHours(23, 59, 59, 999);
+    return {
+      $match: {
+        createdAt: { $gte: startOfMonth, $lt: endOfMonth },
+      },
+    };
+  }
+
+  if (type === "quarter") {
+    let startOfQuarter = new Date(`${year}-${startMonth}-01`);
+    let endOfQuarter = new Date(
+      `${year}-${endMonth}-${new Date(year, endMonth, 0).getDate()}`
+    );
+    endOfQuarter.setHours(23, 59, 59, 999);
+    return {
+      $match: {
+        createdAt: { $gte: startOfQuarter, $lt: endOfQuarter },
+      },
+    };
+  }
+
+  if (type === "year") {
+    let startOfYear = new Date(`${year}-01-01`);
+    let endOfYear = new Date(`${year}-12-${new Date(year, 12, 0).getDate()}`);
+    endOfYear.setHours(23, 59, 59, 999);
+    console.log(startOfYear, endOfYear);
+    return {
+      $match: {
+        createdAt: { $gte: startOfYear, $lt: endOfYear },
+      },
+    };
+  }
+};
+
 internals.get_ratertypes = async (req, reply) => {
-  let { establishment } = req.query;
+  let { establishment, overallFilter } = req.query;
 
   let query = [
     {
@@ -29,6 +70,11 @@ internals.get_ratertypes = async (req, reply) => {
     });
   }
 
+  if (overallFilter) {
+    let dateFilter = getDateFilter(overallFilter);
+    query.unshift(dateFilter);
+  }
+
   let raterTypes = await Rate.aggregate(query);
 
   return {
@@ -39,9 +85,8 @@ internals.get_ratertypes = async (req, reply) => {
 
 internals.get_performance = async (req, reply) => {
   let query = [{ report: false }, { rate: true }, { void: false }];
+  let { startDate, endDate, overallFilter } = req.query;
 
-  let startDate = req.query.startDate;
-  let endDate = req.query.endDate;
   if (startDate || endDate) {
     var start = new Date(startDate);
     start.setHours(0, 0, 0, 0);
@@ -54,7 +99,8 @@ internals.get_performance = async (req, reply) => {
   var condition = {
     $and: query,
   };
-  let performance = await Rate.aggregate([
+
+  let aggregate = [
     { $match: condition },
     {
       $group: {
@@ -72,7 +118,14 @@ internals.get_performance = async (req, reply) => {
         rten: { $sum: "$rate_ten" },
       },
     },
-  ]);
+  ];
+
+  if (overallFilter) {
+    var dateFilter = getDateFilter(overallFilter);
+    aggregate.unshift(dateFilter);
+  }
+
+  let performance = await Rate.aggregate(aggregate);
 
   if (performance[0]) {
     rate.Cnt = performance[0].rCount;
@@ -106,7 +159,7 @@ internals.get_performance = async (req, reply) => {
 };
 
 internals.get_reported_department = async (req, reply) => {
-  let { remarks, establishment, pageSize, current } = req.query;
+  let { remarks, establishment, createdAt, pageSize, current } = req.query;
   let query = [{ report: true }, { void: false }];
   if (remarks) {
     query.push({ remarks });
@@ -115,6 +168,20 @@ internals.get_reported_department = async (req, reply) => {
   if (establishment) {
     query.push({ establishment });
   }
+
+  if (createdAt) {
+    query.push({
+      $expr: {
+        $eq: [
+          createdAt,
+          {
+            $dateToString: { date: "$createdAt", format: "%Y-%m-%d" },
+          },
+        ],
+      },
+    });
+  }
+
   let total = await Rate.countDocuments({
     $and: query,
   });
@@ -132,21 +199,31 @@ internals.get_reported_department = async (req, reply) => {
 };
 
 internals.get_respondents = async (req, reply) => {
-  let { raterType, establishment } = req.query;
-  console.log(establishment)
-  let query = {};
+  let { raterType, establishment, createdAt } = req.query;
+  let query = [];
 
   if (raterType) {
-    query = { ...query, raterType };
+    query.push({ raterType });
   }
 
   if (establishment) {
-    query = { ...query, establishment };
+    query.push({ establishment });
   }
 
-  console.log(query)
+  if (createdAt) {
+    query.push({
+      $expr: {
+        $eq: [
+          createdAt,
+          {
+            $dateToString: { date: "$createdAt", format: "%Y-%m-%d" },
+          },
+        ],
+      },
+    });
+  }
 
-  let respondents = await Rate.find(query);
+  let respondents = await Rate.find(query.length === 0 ? {} : { $and: query });
 
   return {
     success: true,
@@ -172,17 +249,33 @@ internals.reply_report = function (req, reply) {
 };
 
 internals.get_assignedoffice_comments = async (req, reply) => {
-  let { officeName, remarks, pageSize, current } = req.query;
+  let { officeName, remarks, createdAt, pageSize, current } = req.query;
 
-  let query = {
-    establishment: officeName,
-  };
+  let query = [
+    {
+      establishment: officeName,
+    },
+  ];
 
   if (remarks) {
-    query = { ...query, remarks };
+    query.push({ remarks });
   }
-  let total = await Rate.countDocuments(query);
-  let comments = await Rate.find(query)
+
+  if (createdAt) {
+    query.push({
+      $expr: {
+        $eq: [
+          createdAt,
+          {
+            $dateToString: { date: "$createdAt", format: "%Y-%m-%d" },
+          },
+        ],
+      },
+    });
+  }
+
+  let total = await Rate.countDocuments({ $and: query });
+  let comments = await Rate.find({ $and: query })
     .limit(parseInt(pageSize, 10))
     .skip((parseInt(current, 10) - 1) * parseInt(pageSize, 10));
 
@@ -194,7 +287,7 @@ internals.get_assignedoffice_comments = async (req, reply) => {
 };
 
 internals.get_comments = async (req, reply) => {
-  let { remarks, establishment, pageSize, current } = req.query;
+  let { remarks, establishment, createdAt, pageSize, current } = req.query;
 
   let query = [
     { concern: false },
@@ -205,6 +298,19 @@ internals.get_comments = async (req, reply) => {
 
   if (remarks) {
     query.push({ remarks });
+  }
+
+  if (createdAt) {
+    query.push({
+      $expr: {
+        $eq: [
+          createdAt,
+          {
+            $dateToString: { date: "$createdAt", format: "%Y-%m-%d" },
+          },
+        ],
+      },
+    });
   }
 
   let total = await Rate.countDocuments({
