@@ -4,7 +4,14 @@ var Handlers = require("./handlers"),
 
 internals.endpoints = [
   // ADMIN ----------
-
+  {
+    method: ["GET"],
+    path: "/test",
+    handler: Handlers.test,
+    config: {
+      auth: false,
+    },
+  },
   {
     method: ["POST"],
     path: "/auth/login",
@@ -35,6 +42,14 @@ internals.endpoints = [
     handler: Handlers.remove_scope,
     config: {
       auth: false,
+    },
+  },
+  {
+    method: ["POST"],
+    path: "/change-password",
+    handler: Handlers.change_password,
+    config: {
+      auth: "token",
     },
   },
 ];

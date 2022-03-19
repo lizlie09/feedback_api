@@ -5,9 +5,10 @@ module.exports = {
   mongodb: {
     ip: "127.0.0.1",
     port: "27017",
-    app: "feedback",
+    db: "feedback",
     username: "lizlie",
-    password: "*whatsthepassw0rd",
+    password: "YXikECBuWtdjpsRL",
+    clusterUrl: "cluster0.omlqw.mongodb.net",
   },
   crypto: {
     privateKey:
@@ -16,5 +17,5 @@ module.exports = {
   },
   auth: {
     password: "algotechdigtalsolutionsrockinrolltotheworldsmashciotechky",
-  }
+  },
 };

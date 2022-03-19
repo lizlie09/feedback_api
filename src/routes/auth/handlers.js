@@ -9,6 +9,10 @@ const Config = require("../../config");
 
 // ADMIN ----------
 
+internals.test = (req, reply) => {
+  return "This is a test. Heroku.";
+};
+
 internals.login = (req, reply) => {
   let email = req.payload.email;
   let password = req.payload.password;
@@ -133,6 +137,32 @@ internals.remove_scope = (req, reply) => {
         message: "An error occurred",
       };
     });
+};
+
+internals.change_password = (req, reply) => {
+  var payload = {
+    password: Crypto.encrypt(req.payload.newPassword),
+  };
+  if (
+    req.auth.credentials.password == Crypto.encrypt(req.payload.oldPassword)
+  ) {
+    return User.updateOne(
+      { _id: req.auth.credentials._id },
+      {
+        $set: payload,
+      }
+    ).then((data) => {
+      return {
+        success: true,
+        message: "Password successfully changed.",
+      };
+    });
+  } else {
+    return {
+      success: false,
+      message: "Old password is incorrect",
+    };
+  }
 };
 
 module.exports = internals;
