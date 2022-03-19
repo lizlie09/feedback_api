@@ -3,7 +3,7 @@
  * ## Imports
  *
  */
-//Mongoose - the ORM
+//Mongoose - the ORM -
 var Mongoose = require('mongoose'),
     ObjectId = Mongoose.Schema.Types.ObjectId,
     Schema = Mongoose.Schema;
