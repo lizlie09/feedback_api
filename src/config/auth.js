@@ -2,7 +2,7 @@
 
 var internals = {},
 	config = require('../config'),
-	User = require('../database/models/User'),
+	User = require('../database/models/Users'),
 	Config = require('../config');
 
 internals.validate = async (decodedToken, req, h) => {

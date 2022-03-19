@@ -2,10 +2,10 @@
 
 var internals = {};
 
-var Rate = require("../../database/models/rate"),
+var Rate = require("../../database/models/Ratings"),
   internals = {};
-var User = require("../../database/models/User");
-var Ranking = require("../../database/models/ranking");
+var User = require("../../database/models/Users");
+var Ranking = require("../../database/models/Rankings");
 var Crypto = require("../../lib/Crypto");
 var moment = require("moment");
 

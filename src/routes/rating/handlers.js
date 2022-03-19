@@ -2,8 +2,8 @@
 
 var internals = {};
 
-var Rate = require("../../database/models/rate"),
-  Ranking = require("../../database/models/ranking"),
+var Rate = require("../../database/models/Ratings"),
+  Ranking = require("../../database/models/Rankings"),
   internals = {};
 
 // ADMIN ----------

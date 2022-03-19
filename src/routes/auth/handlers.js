@@ -2,7 +2,7 @@
 
 var internals = {};
 
-const User = require("../../database/models/User");
+const User = require("../../database/models/Users");
 const Crypto = require("../../lib/Crypto");
 const jwt = require("jsonwebtoken");
 const Config = require("../../config");
