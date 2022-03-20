@@ -17,11 +17,12 @@ const getDateFilter = (overallFilter) => {
       `${year}-${month}-${new Date(year, month, 0).getDate()}`
     );
     endOfMonth.setHours(23, 59, 59, 999);
-    return {
-      $match: {
-        createdAt: { $gte: startOfMonth, $lt: endOfMonth },
-      },
-    };
+    // return {
+    //   $match: {
+    //     createdAt: { $gte: startOfMonth, $lt: endOfMonth },
+    //   },
+    // };
+    return [startOfMonth, endOfMonth];
   }
 
   if (type === "quarter") {
@@ -30,11 +31,12 @@ const getDateFilter = (overallFilter) => {
       `${year}-${endMonth}-${new Date(year, endMonth, 0).getDate()}`
     );
     endOfQuarter.setHours(23, 59, 59, 999);
-    return {
-      $match: {
-        createdAt: { $gte: startOfQuarter, $lt: endOfQuarter },
-      },
-    };
+    // return {
+    //   $match: {
+    //     createdAt: { $gte: startOfQuarter, $lt: endOfQuarter },
+    //   },
+    // };
+    return [startOfQuarter, endOfQuarter];
   }
 
   if (type === "year") {
@@ -42,11 +44,12 @@ const getDateFilter = (overallFilter) => {
     let endOfYear = new Date(`${year}-12-${new Date(year, 12, 0).getDate()}`);
     endOfYear.setHours(23, 59, 59, 999);
     console.log(startOfYear, endOfYear);
-    return {
-      $match: {
-        createdAt: { $gte: startOfYear, $lt: endOfYear },
-      },
-    };
+    // return {
+    //   $match: {
+    //     createdAt: { $gte: startOfYear, $lt: endOfYear },
+    //   },
+    // };
+    return [startOfYear, endOfYear];
   }
 };
 
@@ -72,7 +75,11 @@ internals.get_ratertypes = async (req, reply) => {
 
   if (overallFilter) {
     let dateFilter = getDateFilter(overallFilter);
-    query.unshift(dateFilter);
+    query.unshift({
+      $match: {
+        createdAt: { $gte: dateFilter[0], $lt: dateFilter[1] },
+      },
+    });
   }
 
   let raterTypes = await Rate.aggregate(query);
@@ -85,7 +92,7 @@ internals.get_ratertypes = async (req, reply) => {
 
 internals.get_performance = async (req, reply) => {
   let query = [{ report: false }, { rate: true }, { void: false }];
-  let { startDate, endDate, overallFilter } = req.query;
+  let { startDate, endDate, overallFilter, establishment } = req.query;
 
   if (startDate || endDate) {
     var start = new Date(startDate);
@@ -122,7 +129,19 @@ internals.get_performance = async (req, reply) => {
 
   if (overallFilter) {
     var dateFilter = getDateFilter(overallFilter);
-    aggregate.unshift(dateFilter);
+    aggregate.unshift({
+      $match: {
+        createdAt: { $gte: dateFilter[0], $lt: dateFilter[1] },
+      },
+    });
+  }
+
+  if (establishment) {
+    aggregate.unshift({
+      $match: {
+        establishment,
+      },
+    });
   }
 
   let performance = await Rate.aggregate(aggregate);
@@ -159,7 +178,8 @@ internals.get_performance = async (req, reply) => {
 };
 
 internals.get_reported_department = async (req, reply) => {
-  let { remarks, establishment, createdAt, pageSize, current } = req.query;
+  let { remarks, establishment, createdAt, overallFilter, pageSize, current } =
+    req.query;
   let query = [{ report: true }, { void: false }];
   if (remarks) {
     query.push({ remarks });
@@ -179,6 +199,13 @@ internals.get_reported_department = async (req, reply) => {
           },
         ],
       },
+    });
+  }
+
+  if (overallFilter) {
+    let dateFilter = getDateFilter(overallFilter);
+    query.unshift({
+      createdAt: { $gte: dateFilter[0], $lt: dateFilter[1] },
     });
   }
 
@@ -233,7 +260,7 @@ internals.get_respondents = async (req, reply) => {
 
 internals.reply_report = function (req, reply) {
   var payload = {
-    remarks: req.payload.remarks,
+    ...req.payload,
   };
   return Rate.update(
     { _id: req.payload._id },
@@ -249,7 +276,8 @@ internals.reply_report = function (req, reply) {
 };
 
 internals.get_assignedoffice_comments = async (req, reply) => {
-  let { officeName, remarks, createdAt, pageSize, current } = req.query;
+  let { officeName, remarks, createdAt, pageSize, current, overallFilter } =
+    req.query;
 
   let query = [
     {
@@ -274,6 +302,13 @@ internals.get_assignedoffice_comments = async (req, reply) => {
     });
   }
 
+  if (overallFilter) {
+    let dateFilter = getDateFilter(overallFilter);
+    query.unshift({
+      createdAt: { $gte: dateFilter[0], $lt: dateFilter[1] },
+    });
+  }
+
   let total = await Rate.countDocuments({ $and: query });
   let comments = await Rate.find({ $and: query })
     .limit(parseInt(pageSize, 10))
@@ -287,7 +322,8 @@ internals.get_assignedoffice_comments = async (req, reply) => {
 };
 
 internals.get_comments = async (req, reply) => {
-  let { remarks, establishment, createdAt, pageSize, current } = req.query;
+  let { remarks, establishment, createdAt, overallFilter, pageSize, current } =
+    req.query;
 
   let query = [
     { concern: false },
@@ -310,6 +346,13 @@ internals.get_comments = async (req, reply) => {
           },
         ],
       },
+    });
+  }
+
+  if (overallFilter) {
+    let dateFilter = getDateFilter(overallFilter);
+    query.unshift({
+      createdAt: { $gte: dateFilter[0], $lt: dateFilter[1] },
     });
   }
 

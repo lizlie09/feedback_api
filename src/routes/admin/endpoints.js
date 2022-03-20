@@ -65,7 +65,7 @@ internals.endpoints = [
     path: "/get-offices",
     handler: Handlers.get_offices,
     config: {
-      auth: "token",
+      auth: false,
     },
   },
   {
