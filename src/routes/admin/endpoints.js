@@ -8,7 +8,7 @@ internals.endpoints = [
     path: "/get-ratertypes",
     handler: Handlers.get_ratertypes,
     config: {
-      auth: false,
+      auth: "token",
     },
   },
   {
@@ -16,7 +16,7 @@ internals.endpoints = [
     path: "/get-performance",
     handler: Handlers.get_performance,
     config: {
-      auth: false,
+      auth: "token",
     },
   },
   {
@@ -24,7 +24,7 @@ internals.endpoints = [
     path: "/get-reported-department",
     handler: Handlers.get_reported_department,
     config: {
-      auth: false,
+      auth: "token",
     },
   },
   {
@@ -32,7 +32,7 @@ internals.endpoints = [
     path: "/get-respondents",
     handler: Handlers.get_respondents,
     config: {
-      auth: false,
+      auth: "token",
     },
   },
   {
@@ -40,7 +40,7 @@ internals.endpoints = [
     path: "/reply-report",
     handler: Handlers.reply_report,
     config: {
-      auth: false,
+      auth: "token",
     },
   },
   {
@@ -48,7 +48,7 @@ internals.endpoints = [
     path: "/get-assignedoffice-comments",
     handler: Handlers.get_assignedoffice_comments,
     config: {
-      auth: false,
+      auth: "token",
     },
   },
   {
@@ -56,7 +56,7 @@ internals.endpoints = [
     path: "/get-comments",
     handler: Handlers.get_comments,
     config: {
-      auth: false,
+      auth: "token",
     },
   },
 
@@ -65,7 +65,7 @@ internals.endpoints = [
     path: "/get-offices",
     handler: Handlers.get_offices,
     config: {
-      auth: false,
+      auth: "token",
     },
   },
   {
@@ -73,7 +73,7 @@ internals.endpoints = [
     path: "/create-office",
     handler: Handlers.create_office,
     config: {
-      auth: false,
+      auth: "token",
     },
   },
   {
@@ -81,7 +81,7 @@ internals.endpoints = [
     path: "/edit-office",
     handler: Handlers.edit_office,
     config: {
-      auth: false,
+      auth: "token",
     },
   },
 
@@ -90,7 +90,7 @@ internals.endpoints = [
     path: "/get-rankings",
     handler: Handlers.get_rankings,
     config: {
-      auth: false,
+      auth: "token",
     },
   },
   {
@@ -98,7 +98,7 @@ internals.endpoints = [
     path: "/get-admins",
     handler: Handlers.get_admins,
     config: {
-      auth: false,
+      auth: "token",
     },
   },
 ];

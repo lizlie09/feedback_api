@@ -33,7 +33,7 @@ internals.endpoints = [
     path: "/add-admin",
     handler: Handlers.add_admin,
     config: {
-      auth: false,
+      auth: "token",
     },
   },
   {
@@ -41,7 +41,7 @@ internals.endpoints = [
     path: "/remove-scope",
     handler: Handlers.remove_scope,
     config: {
-      auth: false,
+      auth: "token",
     },
   },
   {
