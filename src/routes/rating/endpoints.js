@@ -10,7 +10,7 @@ internals.endpoints = [
     path: "/rate",
     handler: Handlers.rate,
     config: {
-      auth: "token",
+      auth: false,
     },
   },
   {
@@ -18,7 +18,7 @@ internals.endpoints = [
     path: "/report",
     handler: Handlers.report,
     config: {
-      auth: "token",
+      auth: false,
     },
   },
 ];
