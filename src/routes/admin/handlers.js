@@ -59,7 +59,13 @@ internals.get_ratertypes = async (req, reply) => {
   let query = [
     {
       $group: {
-        _id: "$raterType",
+        _id: "$fullname",
+        raterType: { $push: "$raterType" },
+      },
+    },
+    {
+      $group: {
+        _id: { $first: "$raterType" },
         total: { $sum: 1 },
       },
     },
@@ -441,9 +447,13 @@ internals.edit_office = (req, reply) => {
 internals.get_rankings = async (req, reply) => {
   let { year } = req.query;
 
-  let rankings = await Ranking.find({
-    year: year || 2022,
-  }).lean();
+  let query = {};
+
+  if (year) {
+    query = { ...query, year };
+  }
+
+  let rankings = await Ranking.find(query).lean();
 
   return {
     success: true,
