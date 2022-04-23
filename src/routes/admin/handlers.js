@@ -264,6 +264,52 @@ internals.get_respondents = async (req, reply) => {
   };
 };
 
+internals.get_pending_resolved = async (req, reply) => {
+  let { establishment, overallFilter } = req.query;
+
+  let query = [
+    {
+      $group: {
+        _id: "$establishment",
+        resolved: {
+          $sum: {
+            $cond: { if: { $eq: ["$remarks", true] }, then: 1, else: 0 },
+          },
+        },
+        pending: {
+          $sum: {
+            $cond: { if: { $eq: ["$remarks", false] }, then: 1, else: 0 },
+          },
+        },
+      },
+    },
+  ];
+
+  if (establishment) {
+    query.unshift({
+      $match: {
+        establishment,
+      },
+    });
+  }
+
+  if (overallFilter) {
+    let dateFilter = getDateFilter(overallFilter);
+    query.unshift({
+      $match: {
+        createdAt: { $gte: dateFilter[0], $lt: dateFilter[1] },
+      },
+    });
+  }
+
+  let categorizedRemarks = await Rate.aggregate(query);
+
+  return {
+    success: true,
+    categorizedRemarks,
+  };
+};
+
 internals.reply_report = function (req, reply) {
   var payload = {
     ...req.payload,

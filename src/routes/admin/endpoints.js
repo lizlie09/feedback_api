@@ -36,6 +36,14 @@ internals.endpoints = [
     },
   },
   {
+    method: ["GET"],
+    path: "/get-pending-resolved",
+    handler: Handlers.get_pending_resolved,
+    config: {
+      auth: "token",
+    },
+  },
+  {
     method: ["POST"],
     path: "/reply-report",
     handler: Handlers.reply_report,
