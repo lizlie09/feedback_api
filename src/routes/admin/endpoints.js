@@ -44,6 +44,14 @@ internals.endpoints = [
     },
   },
   {
+    method: ["GET"],
+    path: "/count-reports-by-category",
+    handler: Handlers.count_reports_by_category,
+    config: {
+      auth: "token",
+    },
+  },
+  {
     method: ["POST"],
     path: "/reply-report",
     handler: Handlers.reply_report,

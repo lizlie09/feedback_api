@@ -310,6 +310,43 @@ internals.get_pending_resolved = async (req, reply) => {
   };
 };
 
+internals.count_reports_by_category = async (req, reply) => {
+  let { establishment, overallFilter } = req.query;
+
+  let reports = [
+    "Refusal To Obey Legitimate Management Instructions",
+    "Negligence In Performance Of Duties",
+    "Absenteeism And Leaving The Workplace Without Permission",
+    "Misconduct In Relationships With Fellow Employees Or Clients In The Public",
+    "Damage To Council Property",
+    "Swearing Or Verbal Abuse Of Fellow Employees Or Client In The Public",
+    "Unauthorized Use Of Councils Facilities ( Ex. Tools, Equipment's And Vehicles)",
+  ];
+
+  let countPerCategory = [];
+
+  for (const i in reports) {
+    let query = {
+      reports: reports[i],
+    };
+    if (establishment) {
+      query.establishment = establishment;
+    }
+    if (overallFilter) {
+      let dateFilter = getDateFilter(overallFilter);
+      query.createdAt = { $gte: dateFilter[0], $lt: dateFilter[1] };
+    }
+    let count = await Rate.countDocuments(query);
+
+    countPerCategory.push({ label: reports[i], count });
+  }
+
+  return {
+    success: true,
+    countPerCategory,
+  };
+};
+
 internals.reply_report = function (req, reply) {
   var payload = {
     ...req.payload,
