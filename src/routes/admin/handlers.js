@@ -269,6 +269,11 @@ internals.get_pending_resolved = async (req, reply) => {
 
   let query = [
     {
+      $match: {
+        report: true,
+      },
+    },
+    {
       $group: {
         _id: "$establishment",
         resolved: {
